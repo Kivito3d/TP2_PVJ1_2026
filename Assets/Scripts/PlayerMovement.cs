@@ -6,7 +6,18 @@ public class PlayerMovement : MonoBehaviour
     [Header ("Movement Settings")]
     [SerializeField] private float speed;
 
+    public float Speed
+    {
+        get { return speed; }
+        set { speed = value; }
+    }
     [SerializeField] private float jumpForce;
+    [SerializeField] private bool isStop=false;
+    public bool IsStop
+    {
+        get {return isStop; }
+        set { isStop=value; }
+    }
 
     private float moveHorizontal;
     private float moveVertical;
@@ -20,7 +31,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -28,43 +38,45 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        moveHorizontal = Input.GetAxis("Horizontal");
-        moveVertical = Input.GetAxis("Vertical");
+   
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
 
-        CheckGround();
+            CheckGround();
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            rb.AddForce(new Vector3(0, jumpForce, 0));
-        }
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                rb.AddForce(new Vector3(0, jumpForce, 0));
+            }
+
     }
 
     private void FixedUpdate()
     {
-        Vector3 movement = new Vector3(moveHorizontal * -1, 0.0f, moveVertical * -1).normalized;
+        Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
         rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);
-    }
+        /*Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
 
+        Vector3 newPosition = rb.position + (movement * speed * Time.fixedDeltaTime);
+
+        rb.MovePosition(newPosition);*/
+
+    }
     private void CheckGround()
     {
         Vector3 origin = transform.position;
         isGrounded = Physics.Raycast(origin, Vector3.down, rayDistance, groundLayer);
 
-        Color coloRay;
-        if(isGrounded)
-        {
-            coloRay = Color.green;
-        }
-        else
-        {
-            coloRay = Color.red;
-        }
-
-        //Color ColorRay = condicion ? Variable cuando sea verdadera : variable cuando sea falsa;
-
         Color ColorRay = isGrounded ? Color.green : Color.red;
 
         Debug.DrawRay(origin,Vector3.down*rayDistance,ColorRay);
     }
+
+    public void RotateCharacter(float rotateY)
+    {
+        transform.rotation = Quaternion.Euler(0f, rotateY, 0f);
+    }
+
+
 }
 
