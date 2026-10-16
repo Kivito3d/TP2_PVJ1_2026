@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Destructible
   - Ground
+  - Character
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - GroundLayer
   - Object
   - Item
-  - 
+  - Character
   - 
   - 
   - 

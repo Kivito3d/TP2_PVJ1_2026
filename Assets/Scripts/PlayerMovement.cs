@@ -1,11 +1,17 @@
 using System;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header ("Movement Settings")]
     [SerializeField] private float speed;
 
+    public float Speed
+    {
+        get { return speed; }
+        set { speed = value; }
+    }
     [SerializeField] private float jumpForce;
 
     private float moveHorizontal;
@@ -19,7 +25,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask groundLayer;
 
-
+    [Header("Camera Settings")]
+    [SerializeField] private Transform cameraTransform; 
 
     void Start()
     {
@@ -41,30 +48,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 movement = new Vector3(moveHorizontal * -1, 0.0f, moveVertical * -1).normalized;
-        rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);
-    }
+        /*Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
+        rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);*/
+        Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
 
+        Vector3 newPosition = rb.position + (movement * speed * Time.fixedDeltaTime);
+
+        rb.MovePosition(newPosition);
+    }
     private void CheckGround()
     {
         Vector3 origin = transform.position;
         isGrounded = Physics.Raycast(origin, Vector3.down, rayDistance, groundLayer);
 
-        Color coloRay;
-        if(isGrounded)
-        {
-            coloRay = Color.green;
-        }
-        else
-        {
-            coloRay = Color.red;
-        }
-
-        //Color ColorRay = condicion ? Variable cuando sea verdadera : variable cuando sea falsa;
-
         Color ColorRay = isGrounded ? Color.green : Color.red;
 
         Debug.DrawRay(origin,Vector3.down*rayDistance,ColorRay);
     }
+
+    public void RotateCharacter(float rotateY)
+    {
+        transform.rotation = Quaternion.Euler(0f, rotateY, 0f);
+    }
+
+
 }
 
