@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,6 +12,12 @@ public class PlayerMovement : MonoBehaviour
         set { speed = value; }
     }
     [SerializeField] private float jumpForce;
+    [SerializeField] private bool isStop=false;
+    public bool IsStop
+    {
+        get {return isStop; }
+        set { isStop=value; }
+    }
 
     private float moveHorizontal;
     private float moveVertical;
@@ -25,8 +30,6 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask groundLayer;
 
-    [Header("Camera Settings")]
-    [SerializeField] private Transform cameraTransform; 
 
     void Start()
     {
@@ -35,26 +38,29 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        moveHorizontal = Input.GetAxis("Horizontal");
-        moveVertical = Input.GetAxis("Vertical");
+   
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
 
-        CheckGround();
+            CheckGround();
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            rb.AddForce(new Vector3(0, jumpForce, 0));
-        }
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                rb.AddForce(new Vector3(0, jumpForce, 0));
+            }
+
     }
 
     private void FixedUpdate()
     {
-        /*Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
-        rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);*/
         Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
+        rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);
+        /*Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
 
         Vector3 newPosition = rb.position + (movement * speed * Time.fixedDeltaTime);
 
-        rb.MovePosition(newPosition);
+        rb.MovePosition(newPosition);*/
+
     }
     private void CheckGround()
     {

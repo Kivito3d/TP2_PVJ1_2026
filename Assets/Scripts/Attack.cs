@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Attack : MonoBehaviour
 {
@@ -73,7 +74,7 @@ public class Attack : MonoBehaviour
 
     }
 
-    private void Shoot()
+    public void Shoot()
     {
 
         RaycastInfo(offsetGun);
@@ -81,13 +82,13 @@ public class Attack : MonoBehaviour
         if (Physics.Raycast(origin, dir, out hit, rayDistance))
         {
 
-            ApllyDamage(hit.collider.gameObject);
+            AplyDamage(hit.collider.gameObject);
 
         }
         StartCoroutine(AttackCooldown());
     }
 
-    private void Melee()
+    public void Melee()
     {
 
         RaycastInfo(offsetSword);
@@ -96,9 +97,9 @@ public class Attack : MonoBehaviour
         {
             foreach (Collider col in colliders)
             {
-                if (col.gameObject.CompareTag("Character"))
+                if (col.gameObject.CompareTag("Character") || col.gameObject.CompareTag("Player"))
                 {
-                    ApllyDamage(col.gameObject);
+                    AplyDamage(col.gameObject);
                 }
 
             }
@@ -113,17 +114,29 @@ public class Attack : MonoBehaviour
 
     IEnumerator AttackCooldown()
     {
-        canAttack = false;
-        float currentSpeed = pM.Speed;
-        pM.Speed = 0f;
-        yield return new WaitForSeconds(cooldownAttack);
-        pM.Speed = currentSpeed;
-        canAttack = true;
+        float currentSpeed=0f;
+        if (isPlayer)
+        {
+            currentSpeed = pM.Speed;
+            pM.Speed = 0f;
+            canAttack = false;
+
+            yield return new WaitForSeconds(cooldownAttack);
+
+
+            pM.Speed = currentSpeed;
+            canAttack = true;
+        }
+
+        
+        
+
+
     }
 
-    private void ApllyDamage(GameObject hitObj)
+    private void AplyDamage(GameObject hitObj)
     {
-        if (hitObj.CompareTag("Character") && hitObj!=null)
+        if ((hitObj.CompareTag("Player") || hitObj.CompareTag("Character") ) && hitObj!=null)
         {
             //if (hitObj == null) return;
             Debug.Log($"<color=red>Se aplico daño<>");
