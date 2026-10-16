@@ -8,7 +8,7 @@
 
 # `Ejemplo de Estructura de Readme `
 
-#  Parkour 3D: [Nombre del Proyecto / Juego] 
+#  [Nombre del Proyecto / Juego] 
 
 > **Asignatura:** Programación de Videojuegos I 
 > **Carrera:** Tecnicatura Universitaria en Diseño Integral de Videojuegos (TUDIVJ) — UNJu 
@@ -26,8 +26,6 @@ Ejemplo: "En este proyecto el jugador debe recorrer un circuito de plataformas e
 
 [Escribe aquí la descripción de tu juego] 
 
-Algo
-dos
 --- 
 
 ## 🕹️ Controles del Jugador 
