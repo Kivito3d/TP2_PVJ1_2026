@@ -22,7 +22,13 @@ public class HealthSystem : MonoBehaviour
         get => isDead;
           
     }
-    
+
+    [SerializeField] private GameObject vfx;
+
+    private Rigidbody rb;
+    private Collider col;
+    private Attack attack;
+    private MeshRenderer mesh;
     private void Awake() 
     { 
         currentHealth = maxHealth; 
