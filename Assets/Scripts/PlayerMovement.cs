@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private LayerMask groundLayer;
 
-
+    private GameManager gm;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
