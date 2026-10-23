@@ -1,15 +1,22 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class HealthSystem : MonoBehaviour
 {
 
-    [Header("Health Settings")]
+    [Header("Health System")]
     [SerializeField] private float maxHealth = 100f; 
-    private float currentHealth; 
+    [SerializeField]private float currentHealth; 
     public float CurrentHealth => currentHealth;//usamos getter y setter para el gameManager - solo lectura
 
+    private MeshRenderer mesh;
+
+    [SerializeField] private GameObject vfx;
     [SerializeField] private bool isDead;
+    private Rigidbody rb;
+    private Collider col;
+    private Attack attack;
     public bool IsDead
     {
         get => isDead;
@@ -26,11 +33,10 @@ public class HealthSystem : MonoBehaviour
     { 
         currentHealth = maxHealth; 
         isDead = false; 
-
+        mesh = GetComponent<MeshRenderer>();
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
         attack = GetComponent<Attack>();
-        mesh = GetComponent<MeshRenderer>();
     }
     public void TakeDamage(float amount)
     {
@@ -45,8 +51,6 @@ public class HealthSystem : MonoBehaviour
          * math.clamp(15, 0, 10) => 10 (es mayor que el maximo, devuelve 10)
          */
 
-        //Debug.Log($"Salud actual: " + currentHealth);
-        Debug.Log($"Salud actual: {currentHealth}");
         if (currentHealth <= 0f)
         {
             Dead();
@@ -55,43 +59,41 @@ public class HealthSystem : MonoBehaviour
     private void Dead() 
     { 
         isDead = true;
-
-        //agregar condicional comparando tags player y character, notificar al gameManager
-
+        
+        // Notificacion al GameManager si existiera
         if (gameObject.CompareTag("Player"))
         {
-            GameManager.Instance.NotifyPlayerDead();
+            GameManager.Instance.ChangeState(GameState.GameOver);
+
+
         }
         else if(gameObject.CompareTag("Character"))
         {
-            GameManager.Instance.NotifyEnemyDefeat();
+            GameManager.Instance.EnemyDefeat();
         }
 
         vfx.SetActive(true);
-        //activar vfx
+    
         StartCoroutine(DestroyTransition());
-        //iniciar Corrutina
-
-
-        Debug.Log("Character eliminado"); 
-        // Notificación al GameManager si existiera 
-        //GameManager.Instance.ChangeState(GameState.GameOver);
+        
         //Destroy object
         //efectos
         //animaciones
+
     }
 
     IEnumerator DestroyTransition()
     {
+
+        mesh.enabled = false;
         col.enabled = false;
         rb.isKinematic = true;
-        mesh.enabled = false;
         attack.enabled = false;
-
-        yield return new WaitForSeconds(5f);
-
+        //gameObject.SetActive(false);
+        yield return new WaitForSeconds(5);
         Destroy(this.gameObject);
     }
-    //crear corrutina deshabilitando componentes y destruyendo el objeto
+
+
 
 }

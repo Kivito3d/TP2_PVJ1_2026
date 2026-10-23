@@ -1,6 +1,6 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -8,122 +8,136 @@ public enum GameState
     Playing,
     Paused,
     Victory,
-    GameOver,
+    GameOver
 }
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    //static
 
-    //settings
+    
+
     [Header("State Settings")]
     [SerializeField] private GameState currentState;
 
-    [Header("Victory Settings")]
+    [Header("Settings Enemy")]
     [SerializeField] private EnemyAI[] enemies;
     [SerializeField] private int totalEnemies;
     [SerializeField] private int enemiesRemaining;
 
-    //singleton
+    //public event Action<GameState> OnChangeState;
+    //public GameState CurrentState => currentState;
+
     private void Awake()
     {
-        if(Instance ==null)
+        if (Instance == null)
         {
             Instance = this;
+
         }
         else
         {
+            Debug.LogWarning("Existe una instancia duplicada, destruyendo el objeto");
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);//UI y escenas
-    }
-    void Start()
-    {
-        //estados iniciales
-        //EnemyAI[] enemies = FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
-        totalEnemies = enemies.Length;
-        enemiesRemaining = totalEnemies;
-        ChangeState(GameState.Playing);
+        DontDestroyOnLoad(gameObject);
     }
 
-    void Update()
+    private void Start()
     {
-        //pausa inputs
-        if (Input.GetKeyDown(KeyCode.P))
+        //EnemyAI[] Enemies = FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
+        totalEnemies = enemies.Length;
+        enemiesRemaining = totalEnemies;
+
+        ChangeState(GameState.Playing);
+        Debug.Log($"<color=cyan>Game Manager</color> Nivel iniciado, total de enemigos: <b>{enemiesRemaining}</b>");
+    }
+
+    private void Update()
+    {
+        if (/*Input.GetKeyDown(KeyCode.Escape) ||*/ Input.GetKeyDown(KeyCode.P))
         {
-            Paused();
+            Pause();
         }
     }
 
-   
-    //switch estados
+
     public void ChangeState(GameState newState)
     {
+
         currentState = newState;
+
         switch (currentState)
         {
             case GameState.Start:
-                Time.timeScale = 1f;//0f - 1f
-                Debug.Log("Inicio el juego");
+                Time.timeScale = 1f;
                 break;
+
             case GameState.Playing:
                 Time.timeScale = 1f;
-                Debug.Log("<color=green>ESTADO: jugando</color>");
+                Debug.Log("<color=green>Game Manager</color> Estado: <b>PLAYING</b> El juego esta en ejecucion");
                 break;
+
             case GameState.Paused:
-                Time.timeScale = 0f;
-                Debug.Log("<color=yellow>ESTADO: pausa</color>");
+                Time.timeScale = 0f; // Congela fisicas y temporizadores, si usa time.deltaTime se congela
+                Debug.Log("<color=yellow>Game Manager</color> Estado: <b>PAUSED</b> El tiempo ha sido congelado");
                 break;
+
             case GameState.Victory:
-                Time.timeScale = 0f;
-                //corrutina para detener el tiempo
-                Debug.Log("<color=cyan>ESTADO: Victoria</color>");
+                Time.timeScale = 0f; // Congela el juego al ganar
+                Debug.Log("<color=lime>Game Manager</color> <b>VICTORIA</b> Has eliminado a todos los enemigos");
                 break;
+
             case GameState.GameOver:
-                Time.timeScale = 0f;
-                Debug.Log("<color=red>ESTADO: Game Over</color>");
+                Time.timeScale = 0f; // Congela el juego al perder
+                Debug.Log("<color=red>Game Manager</color>  <b>GAME OVER</b> El jugador ha sido derrotado");
                 break;
         }
     }
 
-    //pausa
-    public void Paused()
+    public void Pause()
     {
-        if(currentState == GameState.Playing)
+        if (currentState == GameState.Playing)
         {
             ChangeState(GameState.Paused);
         }
-        else if(currentState == GameState.Paused)
+        else if (currentState == GameState.Paused)
         {
             ChangeState(GameState.Playing);
         }
     }
 
-    //notificaciones
-    public void NotifyPlayerDead()
-    {
-        if (currentState != GameState.Playing) return;
 
-        ChangeState(GameState.GameOver);
-    }
-
-    public void NotifyEnemyDefeat()
+    public void EnemyDefeat()
     {
+        // Solo continuar si la partida esta en ejecucion
         if (currentState != GameState.Playing) return;
 
         enemiesRemaining--;
+        Debug.Log($"<color=orange>Game Manager</color> Enemigo eliminad, quedan <b>{enemiesRemaining}</b> enemigos");
 
+        // Evaluar condicion de Victoria
         if (enemiesRemaining <= 0)
         {
             ChangeState(GameState.Victory);
         }
     }
 
-    public void NotifyGoalZone()
+
+    public void PlayerDead()
     {
+        // Solo continaur si la partida esta en ejecucion
         if (currentState != GameState.Playing) return;
 
-        ChangeState(GameState.Victory);
+        // Cambia a estado de Derrota
+        ChangeState(GameState.GameOver);
     }
 
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f; // Restaurar siempre la escala de tiempo antes de cargar
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }
 }
