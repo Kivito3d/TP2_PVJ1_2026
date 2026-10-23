@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        
    
             moveHorizontal = Input.GetAxis("Horizontal");
             moveVertical = Input.GetAxis("Vertical");
@@ -55,11 +56,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
         rb.linearVelocity = new Vector3(movement.x * speed, rb.linearVelocity.y, movement.z * speed);
-        /*Vector3 movement = (transform.forward * moveVertical + transform.right * moveHorizontal).normalized;
-
-        Vector3 newPosition = rb.position + (movement * speed * Time.fixedDeltaTime);
-
-        rb.MovePosition(newPosition);*/
 
     }
     private void CheckGround()

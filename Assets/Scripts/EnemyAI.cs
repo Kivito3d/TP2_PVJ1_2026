@@ -124,7 +124,7 @@ public class EnemyAI : MonoBehaviour
     {
   
         transform.LookAt(new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z));
-        // Transición de regreso a Persecución si se aleja
+        // Transicion de regreso a Persecucion si se aleja
 
         if (distanceToPlayer > attackRadius && !isAttacking)
         {
@@ -144,7 +144,6 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = true;
         ExecuteAttack();
         yield return new WaitForSeconds(attackCooldown);
-        Debug.Log("VOlvio");
         isAttacking = false;
         agent.isStopped = false;
 
@@ -203,13 +202,13 @@ public class EnemyAI : MonoBehaviour
     {
         isStunned = true;
         agent.isStopped = true;
-        Debug.Log($"[ENEMIGO] Aturdido por {duration} segundos.");
+        Debug.Log($"Aturdido por {duration} segundos");
 
         yield return new WaitForSeconds(duration);
 
         isStunned = false;
         agent.isStopped = false;
-        Debug.Log(" [ENEMIGO] Recuperado del aturdimiento.");
+        Debug.Log("Recuperado del aturdimiento");
     }
 
 
