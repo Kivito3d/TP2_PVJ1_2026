@@ -138,8 +138,6 @@ public class Attack : MonoBehaviour
     {
         if ((hitObj.CompareTag("Player") || hitObj.CompareTag("Character") ) && hitObj!=null)
         {
-            //if (hitObj == null) return;
-            Debug.Log($"<color=red>Se aplico daño<>");
             hitObj.GetComponent<HealthSystem>().TakeDamage(damage);
 
             isCharacter = true;//variable de apoyo
